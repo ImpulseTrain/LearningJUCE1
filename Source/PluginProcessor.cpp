@@ -166,7 +166,8 @@ bool SimpleEQAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* SimpleEQAudioProcessor::createEditor()
 {
-    return new SimpleEQAudioProcessorEditor (*this);
+    //return new SimpleEQAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -181,6 +182,63 @@ void SimpleEQAudioProcessor::setStateInformation (const void* data, int sizeInBy
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+// User Defined Functions
+
+/*
+    createParameterLayout() creates a simple parameter layout for the following functionalities:
+    1. Low and High Pass Filter value ranges.
+    2. Parametric EQ Filter value ranges.
+    3. Gain value ranges.
+    4. Q-Factor for the filters and its value range.
+    5. Low and High Pass filter slope value ranges.
+
+    Returns: juce::AudioProcessorValueTreeState::ParameterLayout object
+*/ 
+juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::createParameterLayout()
+{
+    // Object to be returned. The Value tree state expects an object for the Parameter Layout.
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    
+    // layout.add(unique pointers of AudioParameter{UserTypes}) with various default values and ranges
+    layout.add(std::make_unique<juce::AudioParameterFloat>("LowCut Freq",
+        "LowCut Freq",
+        juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f),
+        20.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("HighCut Freq",
+        "HighCut Freq",
+        juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f),
+        20000.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Parametric Freq",
+        "Paramtertic Freq",
+        juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f),
+        750.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Gain",
+        "Peak Gain",
+        juce::NormalisableRange<float>(-24.0f, 24.0f, 0.5f, 1.0f),
+        0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Q Factor",
+        "Q Factor",
+        juce::NormalisableRange<float>(0.1f, 10.0f, 0.05f, 1.0f),
+        1.0f));
+    // String array for the AudioParamterChoice pointer. Used for presenting slope choices.
+    juce::StringArray choices = {
+        "12 db/Oct",
+        "24 db/Oct",
+        "36 db / Oct",
+        "48 db/Oct"};
+    layout.add(std::make_unique<juce::AudioParameterChoice>("LowCut Slope",
+        "LowCut Slope",
+        choices,
+        0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("HighCut Slope",
+        "HighCut Slope",
+        choices,
+        0));
+
+
+    return layout;
 }
 
 //==============================================================================

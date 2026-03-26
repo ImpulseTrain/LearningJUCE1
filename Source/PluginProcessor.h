@@ -53,6 +53,12 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    // User declared
+    static  juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+    // Audio Processor Value Tree State is a Value tree that consists of various AudioProcessor elements
+    juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout()};
+
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessor)
